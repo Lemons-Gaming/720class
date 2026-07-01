@@ -28,8 +28,7 @@ export function isScreenOpen(){ return overlay.classList.contains('open'); }
 export function showMainMenu(opts={}){
   showScreen(`
     <div class="menu-tagline">מכינת 720 · היום הראשון</div>
-    <div class="title">יום ראשון,<br><span class="accent">שיעור ראשון</span></div>
-    <div class="subtitle">45 דקות. ארבעה מדים. והמון בחירות קטנות שמצטברות ליום שלם.</div>
+    <div class="title" style="margin-bottom:26px;">יום ראשון,<br><span class="accent">שיעור ראשון</span></div>
     <div class="btn-stack">
       <button class="big-btn orange" id="mNew">▶ משחק חדש</button>
       <button class="big-btn" id="mCont" ${opts.canContinue?'':'disabled'}>המשך מהמקום שעצרתי</button>
