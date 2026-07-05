@@ -8,12 +8,14 @@ import { initMinigames } from './minigames/index.js';
 import { initBreathing } from './breathing.js';
 import { initEndings } from './endings.js';
 import { showMainMenu, showPauseMenu, hideScreen } from './ui.js';
+import { initVoice } from './voice.js';
 import { save, hasSave, loadData, clearSave } from './save.js';
 
 initHud();
 initPresent();
 initMinigames();
 initBreathing();
+initVoice();                       // load voice manifest (tolerant of missing files)
 
 // restore persisted text-speed preference
 { const sp = localStorage.getItem('720_speed'); if(sp!==null) setTextSpeed(+sp); }

@@ -5,6 +5,7 @@
 import * as E from './engine.js';
 import { setTextSpeed } from './present.js';
 import { setMuted, isMuted, unlock, playClick, playConfirm } from './audio.js';
+import { isVoiceOn, setVoiceOn } from './voice.js';
 import { charImage, BG } from './assets.js';
 
 const overlay = document.getElementById('screenOverlay');
@@ -68,10 +69,12 @@ let currentSpeedMs = (()=>{ const v = localStorage.getItem('720_speed'); return 
 export function showSettings(back){
   const speeds = [['רגיל',32],['מהיר',16],['מיידי',0]];
   const muted = isMuted();
+  const vOn = isVoiceOn();
   showScreen(`
     <div class="prompt">הגדרות</div>
     <div class="setting-row"><label>מהירות טקסט</label><div id="spd" class="btn-row"></div></div>
-    <div class="setting-row"><label>קול</label><button class="toggle-btn ${muted?'off':''}" id="snd">${muted?'מושתק':'פועל'}</button></div>
+    <div class="setting-row"><label>צלילי ממשק</label><button class="toggle-btn ${muted?'off':''}" id="snd">${muted?'מושתק':'פועל'}</button></div>
+    <div class="setting-row"><label>קול דיבור</label><button class="toggle-btn ${vOn?'':'off'}" id="voi">${vOn?'פועל':'מושתק'}</button></div>
     <button class="big-btn ghost" id="sBack" style="margin-top:16px;">חזרה</button>`);
   const spd = document.getElementById('spd');
   speeds.forEach(([lbl,ms])=>{
@@ -89,6 +92,15 @@ export function showSettings(back){
     t.classList.toggle('off', willMute);
     t.textContent = willMute ? 'מושתק' : 'פועל';
     if(!willMute) playConfirm();
+  };
+  document.getElementById('voi').onclick = (e)=>{
+    unlock();
+    const willOn = !isVoiceOn();
+    setVoiceOn(willOn);
+    const t = e.currentTarget;
+    t.classList.toggle('off', !willOn);
+    t.textContent = willOn ? 'פועל' : 'מושתק';
+    if(willOn) playConfirm();
   };
   document.getElementById('sBack').onclick = ()=>{ playClick(); back(); };
 }
