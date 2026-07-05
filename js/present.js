@@ -5,6 +5,7 @@
 import * as E from './engine.js';
 import { CHAR, MOMENT, BG, bgVariant, charImage } from './assets.js';
 import { playTick, playSelect, playConfirm } from './audio.js';
+import { speakBeat, speakChoice, prefetchChoices, stopVoice, isVoiceOn } from './voice.js';
 
 const artEl      = document.getElementById('art');
 const dialogueEl = document.getElementById('dialogue');
@@ -108,10 +109,12 @@ function showBeat(){
   const beat = node.beats[beatIndex];
   const isLast = beatIndex >= node.beats.length-1;
   setArt(artForBeat(node, beat));
+  stopVoice();                                   // cut the previous beat's audio
 
   const speaker = beat.speaker;
   const name = beat.name || (speaker==='inner' ? 'מחשבה' : speaker==='narrator' ? '' : '');
   const lineHtml = E.resolveLine(beat);
+  if(CHAR_SPEAKERS.includes(speaker)) speakBeat(speaker, lineHtml);
 
   dialogueEl.innerHTML =
     `<div class="fade-in">`+
@@ -155,6 +158,7 @@ function renderControls(after, isLast){
 
 function revealChoices(after){
   after.innerHTML = '';
+  prefetchChoices(node);
   const wrap = document.createElement('div'); wrap.className='choices';
   node.choices.forEach((c,i)=>{
     const b = document.createElement('button');
@@ -163,7 +167,7 @@ function revealChoices(after){
     b.innerHTML = `<span class="pin"></span>`+
                   `<span class="choice-text">${E.resolveText(c.t)}</span>`+
                   `${c.hint?`<span class="hint-tag">${E.resolveText(c.hint)}</span>`:''}`;
-    b.onmouseenter = ()=> playSelect();
+    b.onmouseenter = ()=>{ if(isVoiceOn()) speakChoice(E.resolveText(c.t)); else playSelect(); };
     b.onclick = ()=> handleChoice(c);
     wrap.appendChild(b);
   });
@@ -173,6 +177,7 @@ function revealChoices(after){
 function advanceBeat(){ beatIndex++; showBeat(); }
 
 function handleContinue(){
+  stopVoice();
   const changed = E.applyDelta(node.d);
   E.applySet(node.set);
   E.emit('bars', { flash: changed.map(c=>c.key) });
@@ -188,6 +193,7 @@ const FB_TEXT = {
 };
 
 function handleChoice(choice){
+  stopVoice();
   playSelect();
   E.applySet(choice.set);
   const changed = E.applyDelta(choice.d);
