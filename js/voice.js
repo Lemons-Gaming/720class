@@ -42,9 +42,12 @@ export function speakBeat(speaker, resolvedLineHtml){
 }
 
 export function speakChoice(resolvedChoiceText){
-  if(!voiceOn) return;
+  if(!voiceOn) return false;
   const speaker = E.state.gender === 'f' ? 'dana' : 'yoav';
-  play(srcFor(speaker, resolvedChoiceText));
+  const src = srcFor(speaker, resolvedChoiceText);
+  if(!src) return false;
+  play(src);
+  return true;
 }
 
 export function prefetchChoices(node){

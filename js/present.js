@@ -5,7 +5,7 @@
 import * as E from './engine.js';
 import { CHAR, MOMENT, BG, bgVariant, charImage } from './assets.js';
 import { playTick, playSelect, playConfirm } from './audio.js';
-import { speakBeat, speakChoice, prefetchChoices, stopVoice, isVoiceOn } from './voice.js';
+import { speakBeat, speakChoice, prefetchChoices, stopVoice } from './voice.js';
 
 const artEl      = document.getElementById('art');
 const dialogueEl = document.getElementById('dialogue');
@@ -167,7 +167,7 @@ function revealChoices(after){
     b.innerHTML = `<span class="pin"></span>`+
                   `<span class="choice-text">${E.resolveText(c.t)}</span>`+
                   `${c.hint?`<span class="hint-tag">${E.resolveText(c.hint)}</span>`:''}`;
-    b.onmouseenter = ()=>{ if(isVoiceOn()) speakChoice(E.resolveText(c.t)); else playSelect(); };
+    b.onmouseenter = ()=>{ if(!speakChoice(E.resolveText(c.t))) playSelect(); };
     b.onclick = ()=> handleChoice(c);
     wrap.appendChild(b);
   });
