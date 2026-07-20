@@ -20,7 +20,7 @@ initVoice();                       // load voice manifest (tolerant of missing f
 // restore persisted text-speed preference
 { const sp = localStorage.getItem('720_speed'); if(sp!==null) setTextSpeed(+sp); }
 initEndings({
-  restart: ()=>{ clearSave(); E.startGame(E.state.gender); },
+  restart: ()=>{ hideScreen(); clearSave(); E.startGame(E.state.gender); },
   toMenu:  ()=> backToMenu(),
 });
 
@@ -34,7 +34,7 @@ E.on('restart', ()=> E.startGame(E.state.gender));
 document.getElementById('menuBtn').onclick = ()=>{
   showPauseMenu({
     onResume:  ()=>{},
-    onRestart: ()=>{ clearSave(); E.startGame(E.state.gender); },
+    onRestart: ()=>{ hideScreen(); clearSave(); E.startGame(E.state.gender); },
     onMain:    ()=> backToMenu(),
   });
 };

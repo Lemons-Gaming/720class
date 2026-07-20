@@ -56,7 +56,7 @@ export function prefetchChoices(node){
   prefetched = [];                                    // drop the previous node's prefetch refs
   const speaker = E.state.gender === 'f' ? 'dana' : 'yoav';
   for(const c of node.choices){
-    const src = srcFor(speaker, E.resolveText(c.t));
+    const src = srcFor(speaker, E.resolveSpeech({ speech:c.speech ?? c.t }));
     if(src){ const a = new Audio(); a.preload = 'auto'; a.src = src; prefetched.push(a); }
   }
 }

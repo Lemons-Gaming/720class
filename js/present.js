@@ -167,7 +167,7 @@ function revealChoices(after){
     b.innerHTML = `<span class="pin"></span>`+
                   `<span class="choice-text">${E.resolveText(c.t)}</span>`+
                   `${c.hint?`<span class="hint-tag">${E.resolveText(c.hint)}</span>`:''}`;
-    b.onmouseenter = ()=>{ if(!speakChoice(E.resolveText(c.t))) playSelect(); };
+    b.onmouseenter = ()=>{ if(!speakChoice(E.resolveSpeech({ speech:c.speech ?? c.t }))) playSelect(); };
     b.onclick = ()=> handleChoice(c);
     wrap.appendChild(b);
   });
