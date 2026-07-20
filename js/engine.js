@@ -57,6 +57,22 @@ export function resolveLine(beat){
   return resolveText(line);
 }
 
+/* Resolve the text sent to TTS. A beat may provide a pronunciation-only
+   `speech` variant while keeping the on-screen `line` unchanged. Flagged
+   beats can likewise override either reachable branch. */
+export function resolveSpeech(beat){
+  let line = beat.speech ?? beat.line;
+  if(beat.tpl){
+    const g = state.flags.goal || 'לא ברור';
+    line = (line||'').replace(/\{\{goal\}\}/g, g);
+  } else if(beat.flag){
+    const val = state.flags[beat.flag];
+    if(val) line = beat.speechIfTrue ?? beat.ifTrue ?? beat.speech ?? beat.line;
+    else line = beat.speechIfFalse ?? beat.ifFalse ?? beat.speech ?? beat.line;
+  }
+  return resolveText(line);
+}
+
 /* ---- fail check (order matters, mirrors prototype) ---- */
 export function checkFail(){
   if(state.stress >= MAX) return 'stress';

@@ -114,7 +114,7 @@ function showBeat(){
   const speaker = beat.speaker;
   const name = beat.name || (speaker==='inner' ? 'מחשבה' : speaker==='narrator' ? '' : '');
   const lineHtml = E.resolveLine(beat);
-  if(CHAR_SPEAKERS.includes(speaker)) speakBeat(speaker, lineHtml);
+  if(CHAR_SPEAKERS.includes(speaker)) speakBeat(speaker, E.resolveSpeech(beat));
 
   dialogueEl.innerHTML =
     `<div class="fade-in">`+
