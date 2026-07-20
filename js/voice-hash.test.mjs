@@ -63,10 +63,9 @@ test('voice regressions stay fixed for both player genders', () => {
   assert.match(resolveSpeech(bot), /את רוצה לנסות/);
   assert.match(resolveSpeech(exit), /כן ואמיתי/);
   assert.doesNotMatch(resolveSpeech(exit), /כנה ואמיתי/);
-  assert.doesNotMatch(resolveSpeech(michalHelp), /הרמת|הרמות/);
-
-  assert.equal(story.s2_tasks.choices[2].speech, 'משחקים עכשיו, ונראה מה יהיה אחר כך.');
-  assert.match(story.s7_bot.choices[2].speech, /^לסיים עם הבוט/);
+  assert.match(resolveSpeech(michalHelp), /שֶׁהֵרַמְתְּ יד/);
+  assert.match(story.s2_tasks.choices[2].speech, /יוֹרדים לשחק/);
+  assert.match(story.s7_bot.choices[2].speech, /^לִסְגּוֹר את הבוט/);
 });
 
 test('Dana help scene follows her question before returning to class flow', () => {
@@ -105,34 +104,33 @@ test('the post-mentor inner thought follows the selected player gender', () => {
   assert.match(resolveLine(beat), /מרגישה קצת יותר קל/);
 });
 
-test('problematic choice pronunciations use safe first-person speech', () => {
-  const goal = story.s1b_goal.choices[1];
-  const [retry, callMichal, markQuestion, phone] = story.s3_stuck.choices;
-  const callAfterPhone = story.s3d_after.choices[1];
-  const breakPhone = story.s10_break.choices[2];
-  const shortPairReply = story.s5_pair.choices[1];
-  const courtBreak = story.s10_break.choices[0];
+test('audio wording matches the displayed wording exactly, apart from niqqud', () => {
+  const plain = value => String(value)
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
 
-  state.gender = 'm';
-  assert.match(resolveSpeech({ speech:goal.speech }), /אני פונה למישהו/);
-  assert.equal(resolveSpeech({ speech:callMichal.speech }), 'אני פונה למיכל עכשיו.');
-  assert.equal(resolveSpeech({ speech:markQuestion.speech }), 'מסמנים את השאלה ומדלגים. בסוף ננסה שוב.');
-  assert.match(resolveSpeech({ speech:phone.speech }), /אני מציץ בטלפון/);
-  assert.match(resolveSpeech({ speech:breakPhone.speech }), /אני משחק בטלפון/);
-  assert.equal(resolveSpeech({ speech:shortPairReply.speech }), 'עונים בקצרה, וחוזרים לחשוב על המבחן.');
-  assert.equal(resolveSpeech({ speech:courtBreak.speech }), 'יורדים למגרש עם דנה — מגיע לי אחרי שעבדתי.');
-
-  state.gender = 'f';
-  assert.match(resolveSpeech({ speech:goal.speech }), /אני פונה למישהו/);
-  assert.match(resolveSpeech({ speech:phone.speech }), /אני מציצה בטלפון/);
-  assert.match(resolveSpeech({ speech:breakPhone.speech }), /אני משחקת בטלפון/);
-  assert.match(callAfterPhone.speech, /^אני פונה למיכל/);
-
-  assert.doesNotMatch(goal.speech, /עזרה/);
-  assert.doesNotMatch(callMichal.speech, /לקרוא/);
-  assert.doesNotMatch(markQuestion.speech, /לסמן/);
-  assert.notEqual(phone.speech, phone.t);
-  assert.notEqual(callAfterPhone.speech, callAfterPhone.t);
-  assert.notEqual(breakPhone.speech, breakPhone.t);
-  assert.ok(retry, 'the unaffected retry choice should remain in place');
+  for (const gender of ['m', 'f']) {
+    state.gender = gender;
+    for (const [nodeId, node] of Object.entries(story)) {
+      for (const [index, choice] of (node.choices || []).entries()) {
+        if (!choice.speech) continue;
+        assert.equal(
+          plain(resolveSpeech({ speech: choice.speech })),
+          plain(resolveLine({ line: choice.t })),
+          `${nodeId}.choices[${index}] (${gender})`,
+        );
+      }
+      for (const [index, beat] of (node.beats || []).entries()) {
+        if (!beat.speech || beat.line.includes('720')) continue;
+        assert.equal(
+          plain(resolveSpeech(beat)),
+          plain(resolveLine(beat)),
+          `${nodeId}.beats[${index}] (${gender})`,
+        );
+      }
+    }
+  }
 });
