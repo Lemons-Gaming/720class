@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { normalizeSpeech, hashId, clipId } from './voice-hash.js';
 import { resolveLine, resolveSpeech, state } from './engine.js';
+import { story } from './story.js';
 
 test('normalizeSpeech strips <em> and collapses whitespace', () => {
   assert.equal(normalizeSpeech('שלום <em>עולם</em>   כאן'), 'שלום עולם כאן');
@@ -44,4 +45,33 @@ test('speech override follows the reachable flag branch', () => {
   assert.equal(resolveSpeech(beat), 'הִבְטַחְתָּ לי.');
   state.flags.promisedDana = false;
   assert.equal(resolveSpeech(beat), 'מישהו בא?');
+});
+
+test('voice regressions stay fixed for both player genders', () => {
+  const dana = story.s2_tasks.beats.find(b => b.speaker === 'dana');
+  const bot = story.s7b_botgood.beats.find(b => b.speaker === 'bot');
+  const michalHelp = story.s3a_michal.beats.find(b => b.speaker === 'michal');
+  const exit = story.s11_exit.beats.find(b => b.speaker === 'michal');
+
+  state.gender = 'm';
+  assert.match(resolveSpeech(dana), /אתה אמרת/);
+  assert.match(resolveSpeech(bot), /אתה רוצה לנסות/);
+  assert.match(resolveSpeech(exit), /כן ואמיתי/);
+
+  state.gender = 'f';
+  assert.match(resolveSpeech(dana), /את אמרת/);
+  assert.match(resolveSpeech(bot), /את רוצה לנסות/);
+  assert.match(resolveSpeech(exit), /כן ואמיתי/);
+  assert.doesNotMatch(resolveSpeech(exit), /כנה ואמיתי/);
+  assert.doesNotMatch(resolveSpeech(michalHelp), /הרמת|הרמות/);
+
+  assert.equal(story.s2_tasks.choices[2].speech, 'משחקים עכשיו, ונראה מה יהיה אחר כך.');
+  assert.match(story.s7_bot.choices[2].speech, /^לסיים עם הבוט/);
+});
+
+test('Dana help scene follows her question before returning to class flow', () => {
+  assert.ok(story.s3b_solo.choices?.length >= 3);
+  assert.ok(story.s3b_solo.choices.some(c => c.to === 's3b_danahelp'));
+  assert.equal(story.s3b_danahelp.continue, 's4_dana');
+  assert.equal(story.s3b_danalater.continue, 's4_dana');
 });
