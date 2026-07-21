@@ -19,6 +19,8 @@ python -m http.server 8720
 
 ## הטמעה באתר (Wix / Google Sites / כל אתר)
 
+מדריך ההנחיה העצמאי למורות ולמורים זמין ב-`teacher-guide.html`.
+
 העלו את תיקיית `game/` לשרת/אחסון, והטמיעו:
 
 ```html
