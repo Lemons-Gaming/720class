@@ -97,6 +97,7 @@ export function goTo(id){
 
 export function startGame(gender){
   reset(gender);
+  emit('start', { resumed:false });
   goTo(START);
 }
 
