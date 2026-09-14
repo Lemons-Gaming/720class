@@ -35,7 +35,8 @@ export function showMainMenu(opts={}){
       <button class="big-btn" id="mCont" ${opts.canContinue?'':'disabled'}>המשך מהמקום שעצרתי</button>
       <button class="big-btn ghost" id="mSet">הגדרות</button>
       <button class="big-btn ghost" id="mCred">קרדיטים</button>
-    </div>`);
+    </div>
+    <div class="site-credit">© שלומי נויפלד</div>`);
   overlay.classList.add('menu-splash');
   document.getElementById('mNew').onclick  = ()=>{ unlock(); playConfirm(); showGenderSelect(g=>{ hideScreen(); E.startGame(g); }); };
   document.getElementById('mCont').onclick = ()=>{ unlock(); playConfirm(); opts.onContinue && opts.onContinue(); };
@@ -115,6 +116,7 @@ export function showCredits(back){
       איורים בסגנון graphic-novel.<br><br>
       תודה ששיחקת 🎮
     </div>
+    <div class="site-credit">© שלומי נויפלד</div>
     <button class="big-btn ghost" id="cBack" style="margin-top:20px;">חזרה</button>`);
   document.getElementById('cBack').onclick = back;
 }

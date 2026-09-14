@@ -262,6 +262,17 @@ button{ font-family:'Rubik',sans-serif; cursor:pointer; }
 .toggle-btn.off{ background:var(--ink-soft); }
 
 .credits-body{ color:#d8cfe8; font-size:clamp(13px,2.5vw,15px); line-height:1.8; }
+
+/* קרדיט יוצר — שורה עדינה בתפריט הראשי */
+.site-credit{
+  margin-top:18px; font-family:'Rubik',sans-serif; font-weight:600;
+  font-size:clamp(11px,2.2vw,13px); letter-spacing:.3px;
+  color:rgba(244,239,250,.62); text-shadow:0 1px 3px rgba(0,0,0,.6);
+}
+/* בתפריט הראשי — מעוגן לתחתית ולא משתתף בזרימה, כדי לא לדחוף את הכפתורים */
+.menu-splash .site-credit{
+  position:absolute; left:0; right:0; bottom:10px; margin-top:0; text-align:center;
+}
 .ending-badge{ display:inline-block; font-family:'Suez One',serif; font-size:clamp(18px,4vw,26px);
   padding:7px 22px; border-radius:14px; color:#fff; border:3px solid var(--ink-line);
   box-shadow:3px 3px 0 rgba(0,0,0,.4); margin-bottom:16px; }
